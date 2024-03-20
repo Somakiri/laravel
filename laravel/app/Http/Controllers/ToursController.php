@@ -75,8 +75,27 @@ class ToursController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
+        $validatedData = $request->validate([
+            'name' => 'required|string',
+            'price' => 'required|numeric',
+            'days' => 'required|numeric',
+            'status' => 'required|numeric',
+            'description' => 'required|string',
+            'image' => 'required|file|image|mimes:jpg,png,jpeg',
+            'category_name' => 'required|string',
+        ]);
+    
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            
+            $path = $file->store('uploads','public');
+
+            $validatedData['image'] = $path;
+        }        
+
         $tour = Tour::find($id);
-        $tour->update($request->all());
+        $tour->update($validatedData);
         return redirect()->route('tours');
 
     }
